@@ -14,6 +14,11 @@
     - Fetcher - řeší stahování stránky
     - Link Extractor - řeší parsování stránky a přidávání nových URL do Frontieru (to jsme dělali v úkolu pomocí např. CSS selektorů)
     - URL Filter, Duplicate elmiminator, URL prioritizer
+- Typy crawlerů:
+  - **Batch Crawlers** create a snapshot of a web space
+  - **Incremental Crawlers** continuously crawl a web space, revisit URLs to ensure freshness
+  - **Focused Crawlers** crawl only pages in certain categories (pages from only specific domain, with high popularity, specific content type, …)
+  - **Topical Crawlers** crawl only pages in certain topics
 
 ![img.png](crawler_diagram.png)
 
