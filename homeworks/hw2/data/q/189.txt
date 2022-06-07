@@ -1,1 +1,0 @@
-is there a design method for calculating thermal fatigue endurances ofcomponents of various types and sizes in a variety of circumstances .

@@ -1,1 +1,0 @@
-some approximate analytical heat conduction solutions using methodsother than biot's principle .

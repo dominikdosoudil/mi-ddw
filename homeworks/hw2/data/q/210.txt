@@ -1,1 +1,0 @@
-has anyone analytically investigated the stabilizing influence of softelastic cores on the buckling strength of cylindrical shells subjectedto non-uniform external pressure .
