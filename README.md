@@ -15,6 +15,8 @@
     - Link Extractor - řeší parsování stránky a přidávání nových URL do Frontieru (to jsme dělali v úkolu pomocí např. CSS selektorů)
     - URL Filter, Duplicate elmiminator, URL prioritizer
 
+![img.png](crawler_diagram.png)
+
 #### Strategie crawlování
 - BFS
     - klasický grafový BFS, čim dřív přidám URL do fronty, tím dřív ho pak resolvnu
