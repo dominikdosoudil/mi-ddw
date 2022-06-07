@@ -68,6 +68,9 @@ Disallow:
 - Některý CAPTCHA jdou obejít, některý ne.
 - AJAX stránky - jdou crawlovat když jsou dobře napsaný (např.  query `../#!inbox` bot předělá na `../_escaped_fragment_=inbox`, a tohle Google pochopí a naservíruje content, ale obecně problém.
 - Spider pasti, dynamický nekonečný generování linků.
+- Honeypot Traps
+  - linky skryté před běžnými uživateli
+  - skryté formulářové inputy (pokud na sever přijde vyplněný input, který není vidět, nejspíš se jedná o crawler)
 
 - Obsah stránky lze dolovat klasicky nástrojema pro zpracování textu, machine learning, regexpama (odhalí email adresy, telefonní čísla atp.), nějakým učicím automatem, který si postaví z HTML strom a hledá vhodný patterny.
 - HTML může být taky anotovaný, aby boti věděli co to je. Např.
