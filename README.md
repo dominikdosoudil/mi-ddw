@@ -75,6 +75,7 @@ Disallow:
 - Některý CAPTCHA jdou obejít, některý ne.
 - AJAX stránky - jdou crawlovat když jsou dobře napsaný (např.  query `../#!inbox` bot předělá na `../_escaped_fragment_=inbox`, a tohle Google pochopí a naservíruje content, ale obecně problém.
 - Spider pasti, dynamický nekonečný generování linků.
+  - např. kalendář může být spider trap protože lze neustále klikat na "next month"
 - Honeypot Traps
   - linky skryté před běžnými uživateli
   - skryté formulářové inputy (pokud na sever přijde vyplněný input, který není vidět, nejspíš se jedná o crawler)
@@ -268,12 +269,14 @@ Disallow:
     - Natural language processing Interchange Format
     - Standard anotací, má URI schéma
 
-- Word embedings
+- Word embeddings
   - pozorování častých výskytů slov vedle sebe (word2vec)
   - word2vec
     - pozorujeme okolí slov, z okolí vytváříme vektor reprezentující dané slovo 
     - FastText
       - slovo rozbije na n-gramy 
+  - language model řeší rozdíly mezi významy slov (myš - počítačová/živá)
+  - vektorizovat lze i věty nebo celé dokumenty
 
 ## Web Data Mining - Social Network Analysis
 - Je to o dost starší než Facebook, studuje lidské vztahy pomocí teorie grafů
@@ -344,7 +347,7 @@ Disallow:
             - `diference_of_cost(x)` se počítá jako `eternal_cost(x) - internal_cost(x)`. Externí cost je počet hran co leze přes rozdělení partition, Intrní cost je počet hran co vede to stejný partitiony jako je node `x`.
         - *Hierarchical clustering*
             - Sestavení stromu clusterování na základě nějaké podobnosti
-        - *Betweenness* - spočtu betweenness všech dvojic uzlů, uříznu hrany s nejmenší hodnotou
+        - *Betweenness* - spočtu betweenness všech dvojic uzlů, uříznu hrany s největší hodnotou
         - *Island method* - pro každý uzel spočtu "výšku", například centralitu, a pak postupně zvedám "vodu" - nějaký threshold, který mi graf rozdělí.
         - Komunity se ale často překrývají, existují na to taky nějaký algoritmy, jak je identifikovat.
         - Modularity:
@@ -352,7 +355,7 @@ Disallow:
           - ![img.png](img.png)
             - u každé kombinace uzlů z clusteru počítá hodnotu podle pravděpodobnosti zda by na daném místě mohla být hrana
             - záporná hodnota znamená že tam hrana není, kladná že je
-    - **Dynamic comminities**
+    - **Dynamic communities**
       - birth & death (vznik a zánik)
       - expansion & contraction (rozšíření a zmenšení)
       - merging & splitting
@@ -363,6 +366,7 @@ Disallow:
     - Využívá se známých charakteristik:
         - **graph distance** Svět je malý, průměrná vzdálenost v síti je docela malá v porovnání s velikostí sítě
           - predikujeme hranu mezi ulzy, které mají krátkou vzdálenost
+          ![img_7.png](img_7.png)- 
         - Většina nodů má krátký linky
         - **common neighbors** Existují clustery přátel, známých a tak podobně
           - predikujeme hranu mezi vrcholy, které mají hodně společných sousedů
@@ -447,7 +451,7 @@ Disallow:
     - Dá se dál modifikovat např. inteligentním surfařem, modifikací teleportace (matice S).
 
 #### HITS
-- Oproti PR celý výpočet závisí na search query
+- Oproti PageRank celý výpočet závisí na search query
 - Je rychlejší než PR, zpracovává méně stránek
 
 - Dva koncepty - **authority** a **hub**:
@@ -477,7 +481,7 @@ Disallow:
     - rozdělení podle kategorií
       - **general access pattern tracking** zkoumáme obecné navštěvovaní stránek (zdali třeba uživatelé na některou stránku vůbec nechodí, nebo jak se uživatelé obvykle pohybují po webu)
       - **customized usage tracking** zkoumáme chování jednotlivých uživatelů, snažíme se zjistit co ho třeba zajímá
-    - rozdělení podle aplikací
+    - rozdělení podle aplikací _(Pozn. autora: asi proč tu analýzu vůbec děláme)_
       - **Usage characterization** jakým způsobem se web využívá, kde jak dlouho uživatelé tráví čas, ...
       - **System iprovement and site modifications** uživatel hned odejde, tak můžeme řešit proč a snažit se to změnit
         - nebo pokud uživatelé často naháží věci do košíku ale obchod neuskuteční
@@ -694,6 +698,13 @@ Pojmy:
 - Vysvětlení, důvod doporučení
     - Když uživateli řeknu proč doporučení dostal, bude víc systému věřit, bude spokojenější.
     - Rychleji se může rozhodnout, jestli je doporučení správné - pokud je důvod nesmysl, tak nemá cenu poslouchat co doporučil.
+
+### Útoky na doporučovací systém
+
+// TODO: zpracovat
+![img_4.png](img_4.png)
+![img_5.png](img_5.png)
+![img_6.png](img_6.png)
 
 - Collaboration filtering je náchylný na útoky. Boti můžou hodnotit můj film dobře, nebo filmy konkurence špatně, a tím ovlivňovat systém.
     - Jako útočník můžu hodnotit dobrý filmy dobře, špatný špatně, a tím schovat (v průměru) můj útok na konkrétní filmy.
