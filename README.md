@@ -110,6 +110,8 @@ Disallow:
         - IDF - inverse document frequency - udává, jak je slovo běžné napříč všemi dokumenty: ![tfidf formula](resources/tfidf.png)
         - *TF-IDF = TF × IDF*
 
+    - ![img.png](tf-idf.png)
+
     - Příklad:
 
         > Slovo se vyskytuje 5x v dokumentu se 100 unikátními slovy -> TF = 5/100
@@ -161,7 +163,7 @@ Disallow:
 - **Inverted index**
     - mapování "keyword" -> "doc1, doc2"
     - tohle je většinou to, co se myslí indexem
-    - buduje se předem, na ve chvíli kdy se řeší query
+    - buduje se předem, ne ve chvíli kdy se řeší query
     - používají se standardní struktury pro mapy - hashtables, B-trees
         - hashtable rychlejší lookup, ale při rozumně omezeným počtu termů
         - B-tree delší hledání, ale umí prefix search a najít podobný slova
@@ -170,25 +172,38 @@ Disallow:
 - Extrakce informací a znalostí z textu
 
 - Proces text miningu:
-    1. Sběr dokumentů
-    2. Preprocessing dokumentů
-    3. Transformace textu, generování featur
-    4. Redukce dimenzionality - výběr featur
-    5. Pattern discovery, klasicky data mining
-    6. Interpretace výsledků
+    1. **Sběr** dokumentů
+    2. **Preprocessing** dokumentů
+       1. Transformace textu, generování featur
+       2. Redukce dimenzionality - výběr featur
+    3. **Pattern discovery**, klasicky data mining
+    4. **Interpretace výsledků**
+
+### Preprocessing
 
 - Tokenizace
     - Nalezení vět, slov -- seskupování znaků do logických celků
+    - oddělovače:
+      - basic oddělovač: whitespace
+      - speciální znaky mohou být oddělovače ale potřebujeme je i uchovat jako tokeny ("()<>?!")
+      - ".,'" jsou oddělovače jen někdy, např. v čísle ne, ale ve větě ano
+    - frequency
+      - četnost tokenů v textu (můžeme díky tomu např. porovnávat slovní zásobu textů)
 
 - Snížení dimenzionality, převedení tokenů do standardní podoby
     - Lemmatizace - převod do základního tvaru (was, is, are -> be)
+      - pomocí slovníků
     - Stemming - určení kořenu slova (waiting -> wait), částečně řízen pravidly, částečně slovníkově
+      - pomocí regexu
     - Odstranění stopwords (a, the, it, they)
     - Synonyma, antonyma
 
 - Sentence splitting
     - Rozsekání textu na věty
     - Není triviální, tečka ne vždy ukončuje větu
+
+- N-gramy (tuply velikosti N) - dávají context slova
+  - díky tomu můžeme generovat text
 
 - Part-of-speech tagging
     - Rozpoznání slovních druhů (noun, proper noun, adjective, verb, pronoun...)
@@ -214,6 +229,7 @@ Disallow:
     - Vytěžování sémantických vztahů mezi entitami (X pracuje pro Y)
     - Naivně se dají hledat fixní slovní patterny, ale to neškáluje
     - Řeší se lingvistickou analýzou (tagging slovních druhů, sestaví se parsing tree, z toho se určí podmět, předmět, přísudek)
+    - `nltk.stem.extract_rels("PERSON", "GPE", sentence, corpus="ace", pattern=r'.*\bborn\b.*', window=5)`
 
 - Opinion Mining
     - Identifikace názorů, emocí, sentimentu z textu - většinou se zkoumá pozitivní, negativní nebo neutrální
@@ -227,6 +243,16 @@ Disallow:
     - Sentiment learning
         - Supervised - mám anotovaná data, na kterých trénuju, například to seberu z recenzí produktů a hvězdiček
         - Unsupervised - sentiment bude na daných frázích slovních druhů, např "ADJ NN"
+    
+    - problémy slovníkových metod:
+      - sarkasmus (dnes je možné občas detekovat pomocí hashtagů [#sarcasm])
+      - kontext:
+        - "This camera **sucks**!" (negative)
+        - "The vacuum cleaner really **sucks**!" (positive)
+    - možnost využívat porovnávání
+      - "better than"
+      - "best of"
+      - ...
 
 - Text summarization
     - Cíl je vytvoření abstraktu, shrnutí textu
@@ -236,11 +262,18 @@ Disallow:
         - Sentence realization - "vyčištění" vět, zjednodušení
     - Postupy:
         - Frequency-based - hledám často se opakující N-gramy, ty potom nějakým způsobem spojím.
-        - Baseline Single Document - hledám nejdůležitější slova v textu, k nim pak clustery okolních důležitých slov, pak vypočtu skóre každého z clusterů a ve finále budu uvažovat věty, které mají clustery s nejvyššími skóre.
+        - Baseline Single Document - hledám nejdůležitější slova v textu, z důležitých slov blízko sebe udělám clustery (včetně slov mezi nimi), pak vypočtu skóre každého z clusterů a ve finále budu uvažovat věty, které mají clustery s nejvyššími skóre.
 
 - *NIF*
     - Natural language processing Interchange Format
     - Standard anotací, má URI schéma
+
+- Word embedings
+  - pozorování častých výskytů slov vedle sebe (word2vec)
+  - word2vec
+    - pozorujeme okolí slov, z okolí vytváříme vektor reprezentující dané slovo 
+    - FastText
+      - slovo rozbije na n-gramy 
 
 ## Web Data Mining - Social Network Analysis
 - Je to o dost starší než Facebook, studuje lidské vztahy pomocí teorie grafů
@@ -249,14 +282,24 @@ Disallow:
     - Egocentrická - analýza okolí jednoho člověka, kvantifikace interakcí mezi jedním uzlem a ostatními
     - Knowledge-based - pochází z computer science, kvantifikuje interakce mezi uživateli, skupinami a dalšími entitami v síti
 
-- Kevin Bacon / Paul Erdös number - six degrees of separation
+- small-world phenomenon
+  - Kevin Bacon / Paul Erdös number - six degrees of separation
+    - odhadli podle toho, že zkoumali náhodně generované grafy a průměrná délka cesty mezi 2 uzly odpovídala ln(total_nodes)/ln(acquaintances_per_node)
+  - Dunbar
+    - průměrně má osoba 150 přátel
+    - 150^6 = 11 trilionů
+      - chyba protože nezapočítává overlap
 - Measures of centrality:
     - Metriky pro měření důležitosti, popularity nebo sociálního kapitálu uzlu v síti, na základě jejich connection patterns
     - Degree centrality - stupeň uzlu - počet hran vedoucí do/z uzlu
     - Closeness - *1 / (součet vzdáleností do všech ostatních uzlů)*
     - Betweenness - počet nejkratších cest všech ostatních uzlů, které vedou skrz uzel X dělený počtem všech nejkratších cest
     - Eigenvector - podobně jako PageRank, iterativně. Uzel s vysokou Eigenvector centralitou je propojen s uzly, které ji mají taky velkou, tedy "kdo je propojen s hodně propojenými uzly?"
-
+- strong and weak ties
+  - zdali mají uzly mezi sebou
+    - **most** (pokud odebereme hranu, nebude možné se z jednoho dostat do druhého)
+    - **lokální most** (odebráním hrany vzroste vzdálenost alespoň o 3)
+    
 #### Clustering
 - Clustering coefficient
     - pravděpodobnost, že dva náhodní kamarádi daného uzlu jsou taky navzájem kamarádi. Udává koncentrovanost vztahů v clusteru, či globálně úroveň clusterovatelnosti.
@@ -282,7 +325,7 @@ Disallow:
     - Klasická komponenta grafu - spojitý podgraf.
 
 - **Homophily**
-    - Mám dva typy uzlů, např. muži-ženy, bílý-černý. Homophily je, pokud se spolu druží spíš v rámci sexu/rasy než aby se družili se všema.
+    - Mám dva typy uzlů, např. muži-ženy, bílý-černý. Homophily je, pokud se spolu druží spíš v rámci pohlaví/rasy než aby se družili se všema.
     - Pokud je počet cross-gender hran výrazně nižší než 2*p*q (kde p, q je podíl té které skupiny), pak je homophilie.
 
 - **Community detection**
@@ -304,23 +347,39 @@ Disallow:
         - *Betweenness* - spočtu betweenness všech dvojic uzlů, uříznu hrany s nejmenší hodnotou
         - *Island method* - pro každý uzel spočtu "výšku", například centralitu, a pak postupně zvedám "vodu" - nějaký threshold, který mi graf rozdělí.
         - Komunity se ale často překrývají, existují na to taky nějaký algoritmy, jak je identifikovat.
+        - Modularity:
+          - nástroj na kontrolu kvality rozdělení komunit
+          - ![img.png](img.png)
+            - u každé kombinace uzlů z clusteru počítá hodnotu podle pravděpodobnosti zda by na daném místě mohla být hrana
+            - záporná hodnota znamená že tam hrana není, kladná že je
+    - **Dynamic comminities**
+      - birth & death (vznik a zánik)
+      - expansion & contraction (rozšíření a zmenšení)
+      - merging & splitting
+        - detekce pomocí _Jaccard similarity score_ (#společné uzly / #všechny unikátní uzly)
 
 - **Link prediction**
     - Sítě jsou vysoce dynamické, pořád se mění. Chci predikovat, kde se budou tvořit hrany (doporučování přátel, interakce mezi proteiny v bioinformatice, doporučovací systémy)
     - Využívá se známých charakteristik:
-        - Svět je malý, průměrná vzdálenost v síti je docela malá v porovnání s velikostí sítě
+        - **graph distance** Svět je malý, průměrná vzdálenost v síti je docela malá v porovnání s velikostí sítě
+          - predikujeme hranu mezi ulzy, které mají krátkou vzdálenost
         - Většina nodů má krátký linky
-        - Existují clustery přátel, známých a tak podobně
+        - **common neighbors** Existují clustery přátel, známých a tak podobně
+          - predikujeme hranu mezi vrcholy, které mají hodně společných sousedů
     - Obecně těžký problém, mám 1/(V^2) pravděpodobnost, že se trefím.
     - Algoritmy:
         - Graph Distance - čím kratší cesta, tím spíš se vytvoří hrana. *score(x,y) = -shortestPath(x,y)*
+          - (např. Katz measure)
         - Common Neighbors - *score(x,y) = <počet společných přátel>*
+          - Jaccard
+          - **Adamic/Adar** dává větší váhu vzácným sousedům
 
 - **Multinode networks**
     - Grafy, kde je víc typů uzlů, např. lidi a společnosti(linkedin), přátelé a stránky (fb)
     - *Affiliation networks* - nepřímé, tranzitivní propojení přes druhý typ uzlu. Počet hran se sečte a ve výsledném grafu tím bude ohodnocena odpovídající hrana:
-
+ 
         ![](resources/affiliation-network.PNG)
+    - pokud máme matici např. osob a firem, tak můžeme zredukovat na matici osob vynásobením A*A^T
 
 ## Web Data Mining - PageRank & HITS
 
@@ -411,6 +470,20 @@ Disallow:
 
 ## Web Usage Mining, Web Analytics
 
+- typy web miningu (pro připomenutí)
+  - Web Content Mining
+  - Web Structure Mining
+  - Web Usage Mining
+    - rozdělení podle kategorií
+      - **general access pattern tracking** zkoumáme obecné navštěvovaní stránek (zdali třeba uživatelé na některou stránku vůbec nechodí, nebo jak se uživatelé obvykle pohybují po webu)
+      - **customized usage tracking** zkoumáme chování jednotlivých uživatelů, snažíme se zjistit co ho třeba zajímá
+    - rozdělení podle aplikací
+      - **Usage characterization** jakým způsobem se web využívá, kde jak dlouho uživatelé tráví čas, ...
+      - **System iprovement and site modifications** uživatel hned odejde, tak můžeme řešit proč a snažit se to změnit
+        - nebo pokud uživatelé často naháží věci do košíku ale obchod neuskuteční
+      - **Personalization** přizpůsobíme obsah uživateli na základě předchozích návštěv
+      - **Business intelligence** marketing/reklamy
+
 - Tři vzájemně závislé fáze:
     1. **Preprocessing, data collection** - dostanu logy, musím to vyčistit, identifikovat transakce, doplnit informace o session na základě znalosti struktury stránky atd.
     2. **Pattern discovery** - detekce patternů pomocí machine learningu, statistických toolů; sumarizace sessions, uživatelů
@@ -422,16 +495,21 @@ Disallow:
         - Agregovaně **pageview** (jedna user-action, otevření jedné resource/stránky), **session** (posloupnost pageviews během jedné návštěvy webu)
     - *Content data* - kolekce objektů a vztahů mezi nimi. Textuální data a multimédia (HTML, obrázky)
     - *Structure data* - organizace obsahu na portálu, struktura odkazů - graf
+    - *User data* - informace o uživateli (informace na profilu vyplněné při registraci)
 
 #### Collecting & preprocessing
 - **Data collecting**
     - Explicitně - nejjednodušší, lidi vyplňujou dotazníky, hodnotí. Může být vysoká kvalita, ale uživatele nebaví něco vyplňovat.
     - Implicitně - neinvazivní, na základě klikání na stránce, eye tracking, postura, výrazy v obličeji, gesta. Privacy problémy kvůli monitorování uživatelů.
-    - Web logy (apache, nginx)
-    - Client-side JS trackers - populární, na webu je data collecting JS overlay, který reportuje co uživatel dělá, aniž by se muselo něco instalovat a lépe se to interpretuje než prostý logy. Dají se tak identifikovat:
-        - **Referral** - jak se sem uživatel dostal? Při prvním přistání na stránce - bylo to na základě search query, nějaký reklamy, kampaně?
-        - **Referrer** - informace o současné relaci
-        - Custom proměnné a flagy.
+      - Web logy (apache, nginx)
+      - Client-side JS trackers - populární, na webu je data collecting JS overlay, který reportuje co uživatel dělá, aniž by se muselo něco instalovat a lépe se to interpretuje než prostý logy. Dají se tak identifikovat:
+        - Collected data:
+          - **Domain** 
+          - **Random user identifier** (např. v cookies) pro identifikaci browsing session 
+          - **Referral** - jak se sem uživatel dostal? Při prvním přistání na stránce - bylo to na základě search query, nějaký reklamy, kampaně?
+          - **Referrer** - informace o současné relaci
+          - Custom proměnné a flagy.
+        - často využívány cookies
 
 - **Preprocessing**
     - Cleaning - odstranění záznamů od crawlerů, error hlášek, přístupů k obrázkům, js, css (pokud to z nějakýho důvodu nepotřebuju)
@@ -479,6 +557,10 @@ Disallow:
     - Standardně třeba *k-means*, podobnost v clusterech max, podobnost mimo cluster min, jako metriku třeba cosine similarity
 
     - Nejčastěji clusteruju uživatele, hledám ty, co mají podobný surfovací vzory - aplikace v segmentaci trhu, personalizaci, komunitách.
+      - clusteruji uživatele s podobnými vektory navštívených stránek
+        ![img_1.png](img_1.png)
+      - nebo lépe podle kategorie místo konkrétních stránke
+        ![img_2.png](img_2.png)
 
 - **Association analysis**
 
@@ -555,6 +637,9 @@ Disallow:
             2. Featury rozsekám na intervaly, např. "důležitost" -> *"důležitost <20", "důležitost (20, 50)", ...)* - tady ale vytvářím dimenze
         - V praxi hledám pravidla jako:
             `{Referral=GoogleSearch, Hour=Morning} -> {Purchase=True}`
+    - Sequential and Navigational Patterns
+      - řeší že apriory neumí brát v úvahu pořadí
+        ![img_3.png](img_3.png)
 
 #### Web Analytics
 - Analýza toho, jak se uživatelé chovají na webu, chci celkový přehled o trendech
