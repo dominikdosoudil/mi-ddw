@@ -658,22 +658,27 @@ Pojmy:
 *Kdykoliv tu mluvím o filmech, mám tím na mysli jakýkoliv doporučovaný objekt, takhle to bylo jednodušší napsat.*
 
 - Všude je moc informací, hodiny videí každou minutu, lidi to nemůžou zvládnout projít. Všichni doporučujou - Google, Youtube, Amazon, Netflix.
-- **Personalizace** - hlavní myšlenka v doporučovacích systémech. Předpoklady
-    - Pokud jsou uživatelé A a B nějakým způsobem podobní, tak potom bude uživatel A pravděpodobně chtít věci, co chtěl B.
-    - Pokud chtěl uživatel nějaký item I, tak v budoucnosti bude pravděpodobně chtít věci podobné itemu I.
 
 - Typy doporučování
+    - **Personalizace** - hlavní myšlenka v doporučovacích systémech. Předpoklady
+        - Pokud jsou uživatelé A a B nějakým způsobem podobní, tak potom bude uživatel A pravděpodobně chtít věci, co chtěl B.
+        - Pokud chtěl uživatel nějaký item I, tak v budoucnosti bude pravděpodobně chtít věci podobné itemu I.
     - **Collaborative filtering**
         - *User-based* - identifikuju podobný uživatele tomu, kterému chci doporučit. Na základě toho, co se jim líbilo, vyberu něco.
         - *Item-based* - jde to i podle filmů, spočtu podobnost vektoru hodnocení od všech uživatelů, tím zjistím jak jsou filmy asi podobný, a doporučím podobný těm, který uživatel ohodnotil dobře. *(pořád tady neřeším obsah, řeším jen podobnost v hodnoceních)*
         - Podobnost řeším zase cosinovou vzdáleností, nebo třeba Pearsonovou metrikou.
         - *Matrix Factorization* - chci objevit latentní(skrytý) faktory uživatelů nebo filmů, a použít je pro doporučení. Místo matice User×Rating budu mít dvě matice - User×Userfeature a Movie×MovFeature, vynásobením získám jediný číslo a to je doporučovací skóre. Featury se dolujou automaticky - například latentní featura v uživatelích by byl určitej herec ve filmech - tihle lidi hodnotí filmy kde hraje nadprůměrně, tuhle featuru chci objevit - rozdělením matice na dvě toho dosáhnu. *ve slajdech to neni moc dobře popsaný, snad tl;dr stačí.*
-        - *Nevýhoda* je, že už musím mít dostatečný množství hodnocení od nějakých uživatelů. Matice bývá řídká, je těžký najít lidi, co hodnotili podobný věci jako já. Nové filmy nejsou vůbec doporučovány a naopak mainstream je doporučovaný pořád, nedá se to použít pro hipstery.
+        - *Nevýhody*:
+          - **cold start** už musím mít dostatečný množství hodnocení od nějakých uživatelů.
+          - **sparsity** Matice bývá řídká, je těžký najít lidi, co hodnotili podobný věci jako já.
+          - **first rater** Nové filmy nejsou vůbec doporučovány a naopak mainstream je doporučovaný pořád,
+          - **popularity bias** nedá se to použít pro hipstery ("someone with unique tastes").
     - **Content-based filtering**
         - analyzuju obsah věcí, na který se uživatel díval. Podle toho pak doporučím podobný věci. Tady ale potřebuju nějaký metadata o věcech.
         - Např. filmy reprezentuju jako vektor žánrů a jejich příslušnosti k nim *(SciFi:1, Western:0, Drama:0.5)*. Pro uživatele sestavím stejný vektor podle toho, co hodnotil (normalizuju do 0-1). Pak počítám podobnosti.
         - *Výhoda* - nepotřebuju data od ostatních, hipsteři dostanou co chtěj.
         - *Nevýhoda* - musím být schopen zakódovat vkus lidí do vektoru, jedhoduše přeučím model, možná je to až moc předvídatelný, nejsou tam žádný "milý překvapení".
+          - nebo například některé věci nechce uživatel kupovat furt dokola (lednice)
     - **Knowledge-based filtering**
         - v situacích, kdy nemám moc informací. Využívám znalostní databázi, není to personalizované. Jednoduše, *jsem v tomhle kontextu, co mám doporučit?*
         - typicky pro drahý, unikátní věci; doporučení se mění s časem (rychle se měnící prostředí nabídky, např. elektronika); interaktivní - uživatel si může naklikat co preferuje
