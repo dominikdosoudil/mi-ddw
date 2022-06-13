@@ -563,7 +563,7 @@ Disallow:
     - Nejčastěji clusteruju uživatele, hledám ty, co mají podobný surfovací vzory - aplikace v segmentaci trhu, personalizaci, komunitách.
       - clusteruji uživatele s podobnými vektory navštívených stránek
         ![img_1.png](img_1.png)
-      - nebo lépe podle kategorie místo konkrétních stránke
+      - nebo lépe podle kategorie místo konkrétních stránek
         ![img_2.png](img_2.png)
 
 - **Association analysis**
